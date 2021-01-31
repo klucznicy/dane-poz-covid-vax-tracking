@@ -1,10 +1,11 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 // Load the Visualization API and the corechart package.
-google.charts.load('current', {'packages':['corechart', 'table', 'bar'], 'language': 'pl'});
+google.charts.load('current', {'packages':['corechart', 'bar'], 'language': 'pl'});
 
 // Set a callback to run when the Google Visualization API is loaded.
 google.charts.setOnLoadCallback(drawChartProgressBar);
+google.charts.setOnLoadCallback(drawChartDailyVaxers);
 google.charts.setOnLoadCallback(drawChartWeeklyVaxers);
 google.charts.setOnLoadCallback(drawChartTotalVaxers);
 
@@ -15,6 +16,13 @@ function drawChartProgressBar() {
 
   var query = new google.visualization.Query( docUrl + '/gviz/tq?gid=1577334276&tq=' + queryString );
   query.send(handleQueryResponseProgressBar);
+}
+
+function drawChartDailyVaxers() {
+  var queryString = encodeURIComponent('SELECT B, D, F');
+
+  var query = new google.visualization.Query( docUrl + '/gviz/tq?gid=1008697565&tq=' + queryString );
+  query.send(handleQueryResponseDaily);
 }
 
 function drawChartWeeklyVaxers() {
@@ -63,6 +71,30 @@ function handleQueryResponseProgressBar(response) {
 
   chart.draw(view, options);
 }
+
+function handleQueryResponseDaily(response) {
+  var data = response.getDataTable();
+
+  var options = {
+    chart: {title:'Postęp szczepień dzień po dniu'},
+    animation: {
+      startup: true,
+      duration: 750,
+    },
+    hAxis: {
+      gridlines: {
+        color: 'transparent'
+      }
+    },
+    colors: ['#4285f4', '#34a853'],
+    legend: { position: 'top' }
+  };
+
+  var chart = new google.visualization.ColumnChart(document.getElementById('daily_vaxers'));
+
+  chart.draw(data, options);
+}
+
 function handleQueryResponseWeekly(response) {
   var data = response.getDataTable();
 
