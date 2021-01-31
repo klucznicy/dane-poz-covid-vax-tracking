@@ -1,5 +1,3 @@
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
 // Load the Visualization API and the corechart package.
 google.charts.load('current', {'packages':['corechart', 'bar'], 'language': 'pl'});
 
@@ -159,4 +157,3 @@ function deliverCSV( response ) {
   hiddenElement.download = 'dane-szczepionki.csv';
   hiddenElement.click();
 }
-</script>
