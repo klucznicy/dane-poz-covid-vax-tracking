@@ -24,9 +24,16 @@ add_filter( 'the_content', 'lu_substitute_tag', 1 );
 function lu_substitute_tag( string $content ) {
   $cache_key = 'klucznicy_spreadsheet_field';
   $fields = array(
-    'spreadsheet_field',
-    'spreadsheet_last_data',
-    'spreadsheet_total_vaxers'
+    0 => array(
+      'name' => 'spreadsheet_field'
+    ),
+    1 => array(
+      'name' => 'spreadsheet_last_data',
+      'processor' => 'process_last_data_date'
+    ),
+    2 => array(
+      'name' => 'spreadsheet_total_vaxers'
+    )
   );
 
   $result = wp_cache_get( $cache_key );
@@ -48,8 +55,21 @@ function lu_substitute_tag( string $content ) {
 
   //@TODO: convert this to a shortcode
   foreach ( $fields as $i => $needle ) {
-    $content = str_replace( $needle, $result[1][$i], $content );
+    $replacement = $result[1][$i];
+
+    if ( is_set( $needle['processor'] ) && function_exists( $needle['processor'] ) ) {
+      $replacement = $needle['processor']( $replacement );
+    }
+
+    $content = str_replace( $needle['name'], $replacement, $content );
   }
 
   return $content;
+}
+
+function process_last_data_date( $date ) {
+  return wp_date(
+    get_option( 'date_format' ),
+    date( 'U', $date )
+  );
 }
