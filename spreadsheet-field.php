@@ -48,7 +48,7 @@ function lu_substitute_tag( string $content ) {
 
     $body    = $response['body']; // use the content
 
-    preg_match_all( '/<td class=\"s[0-9]+\"[ ="a-z]*>([0-9a-z ]+)<\/td>/', $body, $result );
+    preg_match_all( '/<td class=\"s[0-9]+\"[ ="a-z]*>([-0-9a-z ]+)<\/td>/', $body, $result );
 
     wp_cache_set( $cache_key, $result, '' /* group */, 60 * 60 );
   }
@@ -57,7 +57,7 @@ function lu_substitute_tag( string $content ) {
   foreach ( $fields as $i => $needle ) {
     $replacement = $result[1][$i];
 
-    if ( is_set( $needle['processor'] ) && function_exists( $needle['processor'] ) ) {
+    if ( isset( $needle['processor'] ) && function_exists( $needle['processor'] ) ) {
       $replacement = $needle['processor']( $replacement );
     }
 
@@ -70,6 +70,6 @@ function lu_substitute_tag( string $content ) {
 function process_last_data_date( $date ) {
   return wp_date(
     get_option( 'date_format' ),
-    date( 'U', $date )
+    strtotime( $date )
   );
 }
